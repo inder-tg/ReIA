@@ -1,0 +1,184 @@
+---
+title: |
+  | R e IA para la enseñanza del análisis de datos
+  | Módulo I: Introducción al análisis de
+  | datos en R con apoyo de Inteligencia Artificial 
+author: "Inder Tecuapetla"
+date: "Julio 21, 2026 \\hfill itecuapetla@conabio.gob.mx"
+#
+header-includes:
+  - \usepackage{fancyhdr}
+  - \usepackage{float}
+  - \usepackage[spanish]{babel}
+  - \pagestyle{fancy}
+  - \lhead{}
+  - \rhead{CADI-ReIA | Tec MYT | Módulo I}
+  - \renewcommand{\headrulewidth}{0pt}
+  - \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
+  - \renewcommand{\figurename}{Figura}
+  - \renewcommand{\datename}{}
+  - \makeatletter
+  - \def\@setdate{\datename \@date}%
+#
+header-style:
+  - \usepackage{subfigure}
+  - \usepackage{xcolor}
+#
+documentclass: amsart
+geometry: tmargin=2.5cm, bmargin=2.5cm, lmargin=2.5cm, rmargin=2.5cm
+output: 
+  bookdown::pdf_document2:
+    keep_tex: true
+    fig_caption: yes
+    toc: false
+fontsize: 11pt
+link-citations: true
+colorlinks: yes
+graphics: yes
+urlcolor: blue
+#
+#
+bibliography: calcofiBib.bib
+---
+
+```{r setup, include=FALSE}
+library(here)
+library(dplyr)
+library(tidyverse)
+library(patchwork)
+
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Introducción
+
+Los datos oceanográficos permiten tomar decisiones informadas en sostenibilidad, pesca y gestión ambiental. El análisis exploratorio es la primera etapa para entender patrones y variabilidad en los datos.
+
+La información utilizada proviene del programa **CalCOFI** (California Cooperative Oceanic isheries Investigations), uno de los esfuerzos de monitoreo oceanográfico más importantes y longevos a nivel mundial, @mcclatchie2014calcofi. En particular, utilizamos el **Bottle dataset**, @calcofi_bottle , que contiene mediciones directas del agua de mar tomadas en múltiples sitios de muestreo y a diferentes profundidades, permitiendo analizar variables como oxígeneo disuelto, temperatura, salinidad, nutrientes y pigmentos asociados a la productividad marina.
+
+En este breve reporte exploramos la variabilidad de la temperatura en distintas zonas de profundidad del dataset CalCOFI. El objetivo es identificar patrones interanuales y discutir su relevancia ecológica.
+
+<!-- # Metodología -->
+<!-- Se calcularon medias y desviaciones estándar de la temperatura por año y zona de profundidad. Se generaron visualizaciones con `ggplot2`, incluyendo bandas de confianza (±1 sd). -->
+
+# Metodología
+
+El análisis se realizó sobre el Bottle Dataset del programa CalCOFI, que contiene mediciones hidrográficas y químicas desde 1949. Para este reporte se seleccionaron registros de temperatura entre 1993 y 2021, organizados por trimestre y zona de profundidad.
+
+El flujo de trabajo incluyó tres pasos principales:
+
+| 1. Preparación de datos
+
+  - Conversión de la variable temporal Quarter en un factor categórico para representar los trimestres del año.
+
+  - Agrupamiento de observaciones por año y zona de profundidad.
+
+  - Cálculo de estadísticos descriptivos (media y desviación estándar) para cada grupo.
+
+| 2. Visualización exploratoria
+
+  - Histogramas para observar la forma de la distribución de la temperatura en trimestres específicos.
+
+  - Boxplots para resumir la dispersión, la mediana y los valores extremos, complementados con puntos rojos que indican la media.
+
+  - Series de tiempo con bandas de confianza (±1 sd) para mostrar variabilidad interanual y comparar entre zonas de profundidad.
+
+| 3. Interpretación pedagógica
+
+  - Se integraron visualizaciones comparativas (histograma vs. boxplot) para ilustrar cómo diferentes representaciones gráficas aportan perspectivas complementarias.
+
+  - Se plantearon preguntas guía para fomentar la discusión sobre variabilidad, patrones estacionales y posibles implicaciones ecológicas.
+
+  - Este enfoque combina técnicas estadísticas básicas con herramientas de visualización reproducibles en R, facilitando tanto la comprensión de los datos como su uso en un contexto educativo.
+
+
+# Resultados
+
+La variable **Quarter** indica el trimestre del año en que se realizó el muestreo.  
+Al analizar la temperatura por trimestre, podemos observar la **variabilidad estacional** del océano.  
+Los boxplots muestran la distribución completa de los valores, y los puntos rojos indican la media en cada trimestre, Figura \@ref(fig:first-example).
+
+```{r first-example, fig.align='center', size='small', fig.pos='H', fig.cap="Distribución de la temperatura del océano registrada durante cada trimestre desde 1993 hasta 2021.", warning=FALSE, message=FALSE, echo=FALSE, fig.width=6, fig.height=3}
+calcofi <- read_csv( here( "data", "datos_calcofi.csv" ) )
+
+# ----------------------------------------------------------
+# 2. Surfing con dplyr: selección y filtrado
+# ----------------------------------------------------------
+# Seleccionar algunas variables clave
+calcofi_subset <- calcofi %>%
+  select(Year, Quarter, Depth_zone, Temperature = mean_T_degC,
+         Salinity = mean_Salnty, Oxygen = mean_O2ml_L,
+         Nitrates = mean_NO3uM, Phosphates = mean_PO4uM,
+         Chlorophyll = mean_ChlorA, Distance, Dist_cat)
+
+calcofi_subset <- calcofi_subset %>%
+  mutate(Trimestre = factor(Quarter))
+
+
+ggplot(calcofi_subset, aes(x = Trimestre, y = Temperature, fill = Trimestre)) +
+  geom_boxplot(alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", shape = 20, size = 3, color = "red") +
+  labs(title = "Distribución de la temperatura por trimestre",
+       x = "Trimestre del año",
+       y = "Temperatura (°C)") +
+  theme_minimal()
+```
+
+Los boxplots muestran la dispersión y los valores extremos de la temperatura en cada trimestre.
+Los puntos rojos (media) permiten comparar rápidamente los niveles promedio entre trimestres.
+Diferencias claras entre trimestres sugieren patrones estacionales o influencia de fenómenos como El Niño. 
+
+Para entender mejor qué es un **boxplot**, comparemos dos gráficos de la misma variable:  
+la **temperatura del agua en el primer trimestre (Quarter = 1)**.
+ 
+- El **histograma** muestra la forma de la distribución (frecuencia de valores).  
+- El **boxplot** resume la dispersión, la mediana y los valores extremos.  
+- Juntos, ofrecen una visión más completa de los datos.
+
+
+```{r second-example, fig.align='center', size='small', fig.pos='H', fig.cap="Histograma y boxplot de la temperatura del océano registrada durante el primer trimestre desde 1993 hasta 2021.", warning=FALSE, message=FALSE, echo=FALSE, fig.width=6, fig.height=3}
+temp_Q2 <- calcofi_subset %>%
+  filter(Quarter == 2)
+
+# Histograma
+p1 <- ggplot(temp_Q2, aes(x = Temperature)) +
+  geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+  labs(title = "Histograma de Temperatura (Q2)",
+       x = "Temperatura (°C)", y = "Frecuencia") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold")  # aquí ajustas el tamaño
+  )
+
+# Boxplot con media añadida (nota: x fijo = "Q1")
+p2 <- ggplot(temp_Q2, aes(x = "Q2", y = Temperature)) +
+  geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", shape = 20, size = 3, color = "red") +
+  labs(title = "Boxplot de Temperatura (Q2)",
+       y = "Temperatura (°C)", x = "") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold")  # aquí ajustas el tamaño
+  )
+
+# Combinar ambos gráficos lado a lado (patchwork hace el trabajo rudo)
+p1 + p2
+```
+
+# Conclusiones
+
+La temperatura del océano muestra una marcada variabilidad estacional, con diferencias claras entre trimestres.
+
+Los boxplots y histogramas ofrecen perspectivas complementarias: mientras los histogramas revelan la forma de la distribución, los boxplots resumen la dispersión y los valores extremos.
+
+La comparación entre trimestres sugiere la influencia de procesos climáticos y fenómenos como El Niño, que afectan la dinámica térmica del océano.
+
+El uso de RMarkdown y ggplot2 permite documentar de manera reproducible el análisis, integrando código, resultados y reflexión pedagógica en un solo formato.
+
+Este módulo constituye un ejemplo práctico de cómo los datos oceanográficos pueden convertirse en un recurso didáctico para enseñar análisis de datos, fomentar la interpretación crítica y vincular la estadística con la ecología marina.
+
+# Referencias
+
+
+
