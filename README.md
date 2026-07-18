@@ -55,6 +55,7 @@ Más información: [https://calcofi.org](https://calcofi.org)
 - `docs/` → Guías pedagógicas y resúmenes en PDF.  
 - `Rscripts/` → Carpeta con scripts de código en R.
 - `Ejercicios/` → Carpeta con archivos con ejercicios.
+- `RMD/` → Carpeta con archivos .Rmd con ejemplos de reportes técnicos basados en código en R.
 
 ---
 
@@ -76,4 +77,4 @@ un trabajo de análisis con datos de CalCOFI en contextos complejos de sustentab
 
 1. Clona el repositorio:  
    ```bash
-   git clone https://github.com/tuusuario/curso-R-IA-CalCOFI.git
+   git clone https://github.com/tuusuario/ReIA.git
