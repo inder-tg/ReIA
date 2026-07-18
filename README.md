@@ -50,17 +50,17 @@ Más información: [https://calcofi.org](https://calcofi.org)
 ## 📂 Contenido del repositorio
 
 - `README.md` → Guía general del curso.  
-- `Modulo1_Taller.Rmd` → Plantilla de taller en RMarkdown para el primer módulo.  
-- `Modulo1_Soluciones.Rmd` → Versión con soluciones completas para el instructor.  
-- `data/` → Carpeta con datasets de CalCOFI (ejemplo: `calcofi_sample.csv`).  
+- `data/` → Carpeta con datasets de CalCOFI (ejemplo: `dataset_calcofi.csv`).  
 - `slides/` → Presentaciones de apoyo teórico.  
 - `docs/` → Guías pedagógicas y resúmenes en PDF.  
+- `Rscripts/` → Carpeta con scripts de código en R.
+- `Ejercicios/` → Carpeta con archivos con ejercicios.
 
 ---
 
 ## 👩‍🏫 Instructores
 
-- **Inder Rafael Tecuapetla Gómez** (CONABIO, Doctor en Estadística por Cornell University)  
+- **Inder Rafael Tecuapetla Gómez** (SECIHTI-CONABIO, Doctor en Estadística por Cornell University)  
 - **Raúl Gómez Muñoz** (Tec de Monterrey, Doctor en Matemáticas por UC San Diego)  
 
 ---
