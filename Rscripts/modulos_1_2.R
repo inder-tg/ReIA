@@ -16,6 +16,7 @@ library(here)
 library(readr)
 library(tidyverse)
 library(patchwork)
+library(leaflet)
 
 # ----------------------------------------------------------
 # 1. Lectura de datos
@@ -349,4 +350,88 @@ ggplot(temp_year_profundidad_sinDeep,
 # un conjunto de 5–7 variables de interés para los siguientes módulos.
 ############################################################
 
+# --- Código a usar después de la revisión de los ejercicios ---
 
+leaflet(calcofi) %>%
+  addTiles() %>%
+  addCircleMarkers(~Lon_Dec, ~Lat_Dec,
+                   color = ~ifelse(Dist_cat == "Costera", "red", 
+                                   ifelse(Dist_cat == "Transición", "darkgreen", "blue")),
+                   popup = ~paste("Temp:", mean_T_degC, "°C",
+                                  "<br>Distancia:", Distance, "nmi",
+                                  "<br>Categoría:", Dist_cat, ""))
+
+leaflet(calcofi) %>%
+  addTiles() %>%
+  addCircleMarkers(~Lon_Dec, ~Lat_Dec,
+                   color = ~ifelse(Dist_cat == "Costera", "red", 
+                                   ifelse(Dist_cat == "Transición", "darkgreen", "blue")),
+                   popup = ~paste("Temp:", mean_T_degC, "°C",
+                                  "<br>Distancia:", Distance, "nmi",
+                                  "<br>Categoría:", 
+                                  ifelse(Dist_cat == "Oceánica", "Oceánica (azul)",
+                                         ifelse(Dist_cat == "Transición", "Transición (verde)", "Costera (rojo)"))))
+
+calcofi <- calcofi %>%
+  mutate(color_cat = case_when(
+    Dist_cat == "Costera" ~ "red",
+    Dist_cat == "Transición" ~ "darkgreen",
+    TRUE ~ "blue"),
+    label_cat = case_when(
+      Dist_cat == "Costera" ~ "Costera (rojo)",
+      Dist_cat == "Transición" ~ "Transición (verde)",
+      TRUE ~ "Oceánica (azul)")
+  )
+
+leaflet(calcofi) %>%
+  addTiles() %>%
+  addCircleMarkers(~Lon_Dec, ~Lat_Dec,
+                   color = ~color_cat,
+                   popup = ~paste("Temp:", mean_T_degC, "°C",
+                                  "<br>Distancia:", Distance, "nmi",
+                                  "<br>Categoría:", label_cat))
+
+# --- ERROR found en Dist_cat, mal colocadas las categorías
+# --- CORRECCION está abajo
+
+# Revisar las primeras filas
+calcofi %>%
+  select(Distance, Dist_cat, mean_T_degC, mean_O2ml_L) %>%
+  head()
+
+# Resumen estadístico
+calcofi %>%
+  group_by(Dist_cat) %>%
+  summarise(
+    min_Dist = min(Distance, na.rm = TRUE),
+    max_Dist = max(Distance, na.rm = TRUE),
+    temp_range = paste0(round(min(mean_T_degC, na.rm = TRUE), 2), " - ",
+                        round(max(mean_T_degC, na.rm = TRUE), 2)),
+    oxigeno_range = paste0(round(min(mean_O2ml_L, na.rm = TRUE), 2), " - ",
+                           round(max(mean_O2ml_L, na.rm = TRUE), 2)),
+    n = n()
+  )
+
+calcofi_corrected <- calcofi %>%
+  mutate(Dist_cat = case_when(
+    Dist_cat == "Costera"   ~ "Oceánica",
+    Dist_cat == "Oceánica"  ~ "Costera",
+    Dist_cat == "Transición" ~ "Transición",
+    TRUE ~ Dist_cat
+  ))
+
+
+calcofi_corrected %>%
+  group_by(Dist_cat) %>%
+  summarise(
+    min_Dist = min(Distance, na.rm = TRUE),
+    max_Dist = max(Distance, na.rm = TRUE),
+    temp_range = paste0(round(min(mean_T_degC, na.rm = TRUE), 2), " - ",
+                        round(max(mean_T_degC, na.rm = TRUE), 2)),
+    oxigeno_range = paste0(round(min(mean_O2ml_L, na.rm = TRUE), 2), " - ",
+                           round(max(mean_O2ml_L, na.rm = TRUE), 2)),
+    n = n()
+  )
+
+
+write_csv(calcofi_corrected, "data/datos_calcofi_corrected.csv")
