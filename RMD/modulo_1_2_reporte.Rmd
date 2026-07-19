@@ -1,7 +1,7 @@
 ---
 title: |
   | R e IA para la enseñanza del análisis de datos
-  | Módulo I: Introducción al análisis de
+  | Módulos 1 & 2: Introducción al análisis de
   | datos en R con apoyo de Inteligencia Artificial 
 author: "Inder Tecuapetla"
 date: "Julio 21, 2026 \\hfill itecuapetla@conabio.gob.mx"
@@ -12,7 +12,7 @@ header-includes:
   - \usepackage[spanish]{babel}
   - \pagestyle{fancy}
   - \lhead{}
-  - \rhead{CADI-ReIA | Tec MYT | Módulo I}
+  - \rhead{CADI-ReIA | Tec MYT | Módulos 1-2}
   - \renewcommand{\headrulewidth}{0pt}
   - \addto\captionsspanish{\renewcommand{\tablename}{Tabla}}
   - \renewcommand{\figurename}{Figura}
