@@ -61,7 +61,8 @@ Más información: [https://calcofi.org](https://calcofi.org)
 
 ## 👩‍🏫 Instructores
 
-- **Inder Rafael Tecuapetla Gómez** (SECIHTI-CONABIO, Doctor en Estadística por Cornell University)  
+- [Inder Rafael Tecuapetla Gómez](https://irt466.wixsite.com/inder)
+ (SECIHTI-CONABIO, Doctor en Estadística por Cornell University)  
 - **Raúl Gómez Muñoz** (Tec de Monterrey, Doctor en Matemáticas por UC San Diego)  
 
 ---
