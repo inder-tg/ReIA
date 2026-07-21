@@ -51,7 +51,6 @@ Más información: [https://calcofi.org](https://calcofi.org)
 
 - `README.md` → Guía general del curso.  
 - `data/` → Carpeta con datasets de CalCOFI (ejemplo: `dataset_calcofi.csv`).  
-- `slides/` → Presentaciones de apoyo teórico.  
 - `docs/` → Guías pedagógicas y resúmenes en PDF.  
 - `Rscripts/` → Carpeta con scripts de código en R.
 - `Ejercicios/` → Carpeta con archivos con ejercicios.
