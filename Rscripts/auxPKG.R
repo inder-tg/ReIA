@@ -13,7 +13,8 @@
 
 neededPackages <- c("here", "readr", "tidyr", "tidyverse",
                     "patchwork", "leaflet", "dplyr", "ggplot2",
-                    "GGally", "corrplot", "ggcorrplot", "moments")
+                    "GGally", "corrplot", "ggcorrplot", "moments",
+                    "kable", "gt")
 
 packagesToInstall <- setdiff(neededPackages, rownames(installed.packages()))
 
