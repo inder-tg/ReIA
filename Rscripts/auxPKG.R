@@ -14,7 +14,7 @@
 neededPackages <- c("here", "readr", "tidyr", "tidyverse",
                     "patchwork", "leaflet", "dplyr", "ggplot2",
                     "GGally", "corrplot", "ggcorrplot", "moments",
-                    "kable", "gt")
+                    "kable", "gt", "tinytex")
 
 packagesToInstall <- setdiff(neededPackages, rownames(installed.packages()))
 
@@ -24,3 +24,6 @@ if( length(packagesToInstall) > 0 ){
     install.packages(packagesToInstall[i], dependencies = TRUE)
   }
 } 
+
+library(tinytex)
+tinytex::install_tinytex()
