@@ -164,3 +164,86 @@ ggplot(data.frame(Temp_Q2), aes(x = Temp_Q2)) +
        x = "Temperatura (°C)", y = "Frecuencia") +
   theme_minimal()
 
+
+# ---
+# 5. Prueba de hipotesis
+# ---
+
+# La concentración promedio de nitratos en las aguas monitoreadas 
+# por CalCOFI se encuentra por debajo del umbral de preocupación 
+# ambiental de 16 μM
+
+nitratos <- calcofi %>% pull(mean_NO3uM)
+
+mean_nit <- mean(nitratos, na.rm = TRUE)
+sd_nit   <- sd(nitratos, na.rm = TRUE)
+n        <- length(na.omit(nitratos))
+
+se <- sd_nit / sqrt(n)
+
+t_stat <- (mean_nit - 16) / se
+
+df <- n - 1
+
+p_val <- pt(t_stat, df)
+
+list(
+  mean_nitrate = mean_nit,
+  t_statistic  = t_stat,
+  df           = df,
+  p_value      = p_val
+)
+
+# Prueba de hipótesis (una muestra, unilateral)
+t.test(nitratos, mu = 16, alternative = "less")
+
+
+
+# --- 2-sample t-test
+
+# Extraer los datos por zona de profundidad
+nitrate_surface <- calcofi %>%
+  filter(Depth_zone == "Shallow") %>%
+  pull(mean_NO3uM)
+
+nitrate_deep <- calcofi %>%
+  filter(Depth_zone == "Deep") %>%
+  pull(mean_NO3uM)
+
+mean_surface <- mean(nitrate_surface, na.rm = TRUE)
+mean_deep    <- mean(nitrate_deep, na.rm = TRUE)
+
+sd_surface <- sd(nitrate_surface, na.rm = TRUE)
+sd_deep    <- sd(nitrate_deep, na.rm = TRUE)
+
+n_surface <- length(na.omit(nitrate_surface))
+n_deep    <- length(na.omit(nitrate_deep))
+
+se <- sqrt( (sd_surface^2 / n_surface) + (sd_deep^2 / n_deep) )
+
+t_stat <- (mean_surface - mean_deep) / se
+
+df <- ( (sd_surface^2/n_surface + sd_deep^2/n_deep)^2 ) /
+  ( ((sd_surface^2/n_surface)^2 / (n_surface-1)) +
+      ((sd_deep^2/n_deep)^2 / (n_deep-1)) )
+
+p_val <- 2 * (1 - pt(abs(t_stat), df))
+
+list(
+  mean_surface = mean_surface,
+  mean_deep    = mean_deep,
+  t_statistic  = t_stat,
+  df           = df,
+  p_value      = p_val
+)
+
+# Two-sample t-test (bilateral)
+resultado <- t.test(nitrate_surface, nitrate_deep, alternative = "two.sided")
+
+# Mostrar el p-value directamente
+resultado$p.value
+
+
+
+
+
