@@ -181,3 +181,81 @@ length(which(cooks > 4/length(cooks)))
 
 # plot(modelo)
 
+# --- Trans ( en progreso, si har tiempo finalizar)
+
+PO4_subset_Q1_trans <- PO4_subset_Q1 %>%
+  filter( Dist_cat == "Transición" )
+
+ggplot(PO4_subset_Q1_trans, 
+       aes(x = PO4, y = NO3, color = Dist_cat )) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(title = "Relación entre fosfato y nitrato",
+       x = "Fosfato (µg/L)", y = "Nitrato (µmol/L)",
+       color = "Zona") +
+  theme_minimal()
+
+modelo <- lm(NO3 ~ PO4, data = PO4_subset_Q1_trans)
+
+# Resumen del modelo: coeficientes, t-test sobre la pendiente, R²
+summary(modelo)
+
+# Intervalo de confianza para la pendiente (95%)
+confint(modelo, level = 0.95)
+
+
+# ---- Regrrsion multiple
+
+
+# Paquetes necesarios
+library(car)       # para VIF
+library(lmtest)    # para pruebas adicionales
+library(ggplot2)
+
+# Ajustar un modelo múltiple (ejemplo con CalCOFI)
+modelo <- lm(mean_T_degC ~ mean_O2ml_L + mean_Salnty + mean_ChlorA, data = calcofi)
+
+# --- 1. Resumen del modelo: incluye R^2 y estadístico F global ---
+summary(modelo)
+
+# 1. Residuos vs valores ajustados (linealidad y homocedasticidad)
+plot(modelo, which = 1)
+
+# 2. QQ plot de residuos (normalidad)
+plot(modelo, which = 2)
+
+# 3. Escala-Localización (Spread vs Fitted, homocedasticidad)
+plot(modelo, which = 3)
+
+# 4. Residuos vs leverage (influencia, Cook's distance)
+plot(modelo, which = 5)
+
+# --- Diagnóstico de multicolinealidad ---
+library(car)
+vif(modelo)
+# --- 4. Gráficos de diagnóstico uno por uno ---
+
+# Residuos vs valores ajustados (linealidad y homocedasticidad)
+plot(modelo$fitted.values, modelo$residuals,
+     xlab = "Valores ajustados",
+     ylab = "Residuos",
+     main = "Residuos vs Ajustados")
+abline(h = 0, lty = 2, col = "red")
+
+# QQ plot (normalidad de residuos)
+qqnorm(modelo$residuals, main = "QQ Plot de residuos")
+qqline(modelo$residuals, col = "blue")
+
+# Histograma de residuos
+hist(modelo$residuals, breaks = 20,
+     main = "Histograma de residuos",
+     xlab = "Residuos")
+
+# Influencia: gráfico de leverage vs residuos estandarizados
+plot(modelo, which = 5)  # gráfico de influencia (Cook's distance)
+
+# Multicolinealidad visual: pares de predictores
+pairs(calcofi[, c("mean_O2ml_L", "mean_Salnty", "mean_ChlorA")],
+      main = "Relaciones entre predictores (CalCOFI)")
+
+
